@@ -33,6 +33,7 @@ const useGame = () => {
   };
 
   const onKeydown = (player1, player2) => (e) => {
+    // console.log(e.key, '<< key')
     switch (e.key) {
       // player 1
       case 'a':
@@ -45,6 +46,9 @@ const useGame = () => {
         break;
       case 'w':
         player1.velo.y = -veloJump;
+        break;
+      case ' ':
+        player1.attack();
         break;
       //  player 2
       case 'ArrowLeft':
@@ -72,7 +76,6 @@ const useGame = () => {
       case 'd':
         keys.d.pressed = false;
         break;
-        break;
       // player 2
       case 'ArrowLeft':
         keys.ArrowLeft.pressed = false;
@@ -98,13 +101,23 @@ const useGame = () => {
   const initPlayers = () => {
     const ctx = canvasRef.current.getContext('2d');
 
-    const posPlayer1 = { x: 0, y: 0 };
-    const veloPlayer1 = { x: 0, y: 4 };
-    const player1 = new Sprite({ velo: veloPlayer1, pos: posPlayer1, height: 150 });
+    const player1 = new Sprite({
+      velo: { x: 0, y: 4 },
+      pos: { x: 0, y: 0 },
+      height: 150,
+      color: 'red',
+      attColor: 'blue',
+      offset: { x: 0, y: 0 }
+    });
 
-    const posPlayer2 = { x: 500, y: 100 };
-    const veloPlayer2 = { x: 0, y: 4 };
-    const player2 = new Sprite({ velo: veloPlayer2, pos: posPlayer2, height: 150 });
+    const player2 = new Sprite({
+      velo: { x: 0, y: 4 },
+      pos: { x: 500, y: 100 },
+      height: 150,
+      color: 'green',
+      attColor: 'purple',
+      offset: { x: -50, y: 0 }
+    });
 
     return { player1, player2, ctx }
   };
@@ -119,6 +132,7 @@ const useGame = () => {
     player1.update(ctx, canvas);
     player2.update(ctx, canvas);
 
+    // handle movement
     player1.velo.x = 0;
     if (keys.a.pressed && player1.lastKey === 'a') {
       player1.velo.x = -veloWalk;
@@ -131,6 +145,18 @@ const useGame = () => {
       player2.velo.x = -veloWalk;
     } else if (keys.ArrowRight.pressed && player2.lastKey === 'ArrowRight') {
       player2.velo.x = veloWalk
+    }
+
+    // detect collision
+    if (
+      (player1.attackBox.pos.x + player1.attackBox.width >= player2.pos.x)
+      && (player1.attackBox.pos.x <= player2.pos.x + player2.width)
+      && (player1.attackBox.pos.y + player1.attackBox.height >= player2.pos.y)
+      && (player1.attackBox.pos.y <= player2.pos.y + player2.height)
+      && player1.isAttacking
+    ) {
+      player1.isAttacking = false;
+      console.log('HIT');
     }
   };
 
