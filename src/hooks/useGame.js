@@ -2,13 +2,19 @@
 import { useEffect, useRef, useState } from "react";
 
 import { Sprite } from "../model/Sprite";
+import { TIE, PLAYER_1_WIN, PLAYER_2_WIN } from '../utils/constant';
 
 const useGame = () => {
-  const [timer, setTimer] = useState(60);
+  const [timer, setTimer] = useState(5);
   const [playerOneHealth, setPlayerOneHealth] = useState(100);
   const [playerTwoHealth, setPlayerTwoHealth] = useState(100);
+  const [result, setResult] = useState('');
 
+  const counter = useRef(timer);
   const canvasRef = useRef(null);
+  const resultRef = useRef(result);
+  const playerOneHealthRef = useRef(playerOneHealth);
+  const playerTwoHealthRef = useRef(playerTwoHealth);
 
   const veloWalk = 5;
   const veloJump = 20;
@@ -21,7 +27,6 @@ const useGame = () => {
   }
 
   useEffect(() => {
-    console.log('test');
     initCanvas();
 
     const { player1, player2, ctx } = initPlayers();
@@ -35,10 +40,24 @@ const useGame = () => {
   }, []);
 
   const runTimer = () => {
-    if (timer > 0) {
-      setTimeout(runTimer, 1000);
-      setTimer(prev => prev - 1);
+    if (counter.current === 0) {
+      let finalResult = result;
+      if (playerOneHealthRef.current === playerTwoHealthRef.current) {
+        finalResult = TIE;
+      } else if (playerOneHealthRef.current > playerTwoHealthRef.current) {
+        finalResult = PLAYER_1_WIN;
+      } else {
+        finalResult = PLAYER_2_WIN;
+      }
+      resultRef.current = finalResult;
+      setResult(finalResult);
     }
+    if (counter.current > 0 && !resultRef.current) {
+      counter.current = counter.current - 1
+      setTimer(prev => prev - 1);
+      setTimeout(runTimer, 1000);
+    }
+
   };
 
   const initEventListener = (player1, player2) => {
@@ -146,6 +165,19 @@ const useGame = () => {
       && (rect1.attackBox.pos.y <= rect2.pos.y + rect2.height)
   };
 
+  const handleAttack = (setter, ref, winMsg) => {
+    const decrement = 5;
+    if (ref.current > 0) {
+      ref.current = ref.current - decrement;
+      setter(prev => prev - decrement);
+
+      if (ref.current === 0) {
+        resultRef.current = winMsg;
+        setResult(winMsg);
+      }
+    }
+  };
+
   const animate = (player1, player2, ctx) => {
     window.requestAnimationFrame(() => animate(player1, player2, ctx));
 
@@ -156,36 +188,43 @@ const useGame = () => {
     player1.update(ctx, canvas);
     player2.update(ctx, canvas);
 
-    // handle movement
-    player1.velo.x = 0;
-    if (keys.a.pressed && player1.lastKey === 'a') {
-      player1.velo.x = -veloWalk;
-    } else if (keys.d.pressed && player1.lastKey === 'd') {
-      player1.velo.x = veloWalk
+
+    if (!resultRef.current) {
+      // handle movement
+      player1.velo.x = 0;
+      if (keys.a.pressed && player1.lastKey === 'a') {
+        player1.velo.x = -veloWalk;
+      } else if (keys.d.pressed && player1.lastKey === 'd') {
+        player1.velo.x = veloWalk
+      }
+
+      player2.velo.x = 0;
+      if (keys.ArrowLeft.pressed && player2.lastKey === 'ArrowLeft') {
+        player2.velo.x = -veloWalk;
+      } else if (keys.ArrowRight.pressed && player2.lastKey === 'ArrowRight') {
+        player2.velo.x = veloWalk
+      }
     }
 
-    player2.velo.x = 0;
-    if (keys.ArrowLeft.pressed && player2.lastKey === 'ArrowLeft') {
-      player2.velo.x = -veloWalk;
-    } else if (keys.ArrowRight.pressed && player2.lastKey === 'ArrowRight') {
-      player2.velo.x = veloWalk
+    if (resultRef.current) {
+      player1.velo.x = 0;
+      player2.velo.x = 0;
     }
 
     // detect collision
     if (rectangularCollision(player1, player2) && player1.isAttacking) {
       player1.isAttacking = false;
-      // console.log('P1 Attacking');
-      setPlayerTwoHealth(prev => prev - 5);
+      handleAttack(setPlayerTwoHealth, playerTwoHealthRef, PLAYER_1_WIN);
     }
     if (rectangularCollision(player1, player2) && player2.isAttacking) {
       player2.isAttacking = false;
-      // console.log('P2 Attacking');
-      setPlayerOneHealth(prev => prev - 5);
+      handleAttack(setPlayerOneHealth, playerOneHealthRef, PLAYER_2_WIN);
     }
   };
 
   return {
     timer,
+    result,
     canvasRef,
     playerOneHealth,
     playerTwoHealth,

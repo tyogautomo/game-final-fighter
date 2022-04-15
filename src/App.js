@@ -2,6 +2,7 @@ import { useGame } from './hooks/useGame';
 import {
   Timer,
   Canvas,
+  Result,
   Counter,
   Container,
   GlobalStyles,
@@ -10,14 +11,15 @@ import {
   PlayerOneInner,
   PlayerTwoInner,
   TopBarContainer,
+  StatusContainer,
 } from './styles';
 
 function App() {
-  const { canvasRef, playerOneHealth, playerTwoHealth, timer } = useGame();
+  const { canvasRef, playerOneHealth, playerTwoHealth, timer, result } = useGame();
 
-  const renderHealthBar = () => {
-    return (
-      <TopBarContainer>
+  const renderHealthBar = () => (
+    <TopBarContainer>
+      <StatusContainer>
         <PlayerOneBar>
           <PlayerOneInner health={playerOneHealth} />
         </PlayerOneBar>
@@ -27,9 +29,12 @@ function App() {
         <PlayerTwoBar>
           <PlayerTwoInner health={playerTwoHealth} />
         </PlayerTwoBar>
-      </TopBarContainer>
-    );
-  };
+      </StatusContainer>
+      <Result>
+        {result}
+      </Result>
+    </TopBarContainer>
+  );
 
   return (
     <Container>
