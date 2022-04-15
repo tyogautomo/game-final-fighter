@@ -1,9 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { useSprite } from "../model/Sprite";
 
 const useGame = () => {
+  const [playerOneHealth, setPlayerOneHealth] = useState(100);
+  const [playerTwoHealth, setPlayerTwoHealth] = useState(100);
+
   const canvasRef = useRef(null);
 
   const { Sprite } = useSprite();
@@ -168,7 +171,7 @@ const useGame = () => {
     }
   };
 
-  return { canvasRef };
+  return { canvasRef, playerOneHealth, playerTwoHealth };
 };
 
 export { useGame };

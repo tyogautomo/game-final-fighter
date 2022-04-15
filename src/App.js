@@ -1,19 +1,19 @@
 import { useGame } from './hooks/useGame';
 import {
+  Timer,
   Canvas,
+  Counter,
   Container,
-  TopBarContainer,
   GlobalStyles,
   PlayerOneBar,
   PlayerTwoBar,
-  Timer,
-  Counter,
   PlayerOneInner,
   PlayerTwoInner,
+  TopBarContainer,
 } from './styles';
 
 function App() {
-  const { canvasRef } = useGame();
+  const { canvasRef, playerOneHealth, playerTwoHealth } = useGame();
 
   const renderHealthBar = () => {
     return (
