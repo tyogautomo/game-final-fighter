@@ -66,61 +66,64 @@ const useGame = () => {
   };
 
   const onKeydown = (player1, player2) => (e) => {
-    // console.log(e.key, '<< key')
-    switch (e.key) {
-      // player 1
-      case 'a':
-        keys.a.pressed = true;
-        player1.lastKey = 'a';
-        break;
-      case 'd':
-        keys.d.pressed = true;
-        player1.lastKey = 'd';
-        break;
-      case 'w':
-        player1.velo.y = -veloJump;
-        break;
-      case ' ':
-        player1.attack();
-        break;
-      //  player 2
-      case 'ArrowLeft':
-        keys.ArrowLeft.pressed = true;
-        player2.lastKey = 'ArrowLeft';
-        break;
-      case 'ArrowRight':
-        keys.ArrowRight.pressed = true;
-        player2.lastKey = 'ArrowRight';
-        break;
-      case 'ArrowUp':
-        player2.velo.y = -veloJump;
-        break;
-      case 'Enter':
-        player2.attack();
-        break;
-      default:
-        break;
+    if (!resultRef.current) {
+      switch (e.key) {
+        // player 1
+        case 'a':
+          keys.a.pressed = true;
+          player1.lastKey = 'a';
+          break;
+        case 'd':
+          keys.d.pressed = true;
+          player1.lastKey = 'd';
+          break;
+        case 'w':
+          player1.velo.y = -veloJump;
+          break;
+        case ' ':
+          player1.attack();
+          break;
+        //  player 2
+        case 'ArrowLeft':
+          keys.ArrowLeft.pressed = true;
+          player2.lastKey = 'ArrowLeft';
+          break;
+        case 'ArrowRight':
+          keys.ArrowRight.pressed = true;
+          player2.lastKey = 'ArrowRight';
+          break;
+        case 'ArrowUp':
+          player2.velo.y = -veloJump;
+          break;
+        case 'Enter':
+          player2.attack();
+          break;
+        default:
+          break;
+      }
     }
   };
 
   const onKeyup = (player1, player2) => (e) => {
-    switch (e.key) {
-      // player 1
-      case 'a':
-        keys.a.pressed = false;
-        break;
-      case 'd':
-        keys.d.pressed = false;
-        break;
-      // player 2
-      case 'ArrowLeft':
-        keys.ArrowLeft.pressed = false;
-        break;
-      case 'ArrowRight':
-        keys.ArrowRight.pressed = false;
-        break;
-      default:
-        break;
+    if (!resultRef.current) {
+      switch (e.key) {
+        // player 1
+        case 'a':
+          keys.a.pressed = false;
+          break;
+        case 'd':
+          keys.d.pressed = false;
+          break;
+        // player 2
+        case 'ArrowLeft':
+          keys.ArrowLeft.pressed = false;
+          break;
+        case 'ArrowRight':
+          keys.ArrowRight.pressed = false;
+          break;
+        default:
+          break;
+      }
     }
   }
 
@@ -189,21 +192,19 @@ const useGame = () => {
     player2.update(ctx, canvas);
 
 
-    if (!resultRef.current) {
-      // handle movement
-      player1.velo.x = 0;
-      if (keys.a.pressed && player1.lastKey === 'a') {
-        player1.velo.x = -veloWalk;
-      } else if (keys.d.pressed && player1.lastKey === 'd') {
-        player1.velo.x = veloWalk
-      }
+    // handle movement
+    player1.velo.x = 0;
+    if (keys.a.pressed && player1.lastKey === 'a') {
+      player1.velo.x = -veloWalk;
+    } else if (keys.d.pressed && player1.lastKey === 'd') {
+      player1.velo.x = veloWalk
+    }
 
-      player2.velo.x = 0;
-      if (keys.ArrowLeft.pressed && player2.lastKey === 'ArrowLeft') {
-        player2.velo.x = -veloWalk;
-      } else if (keys.ArrowRight.pressed && player2.lastKey === 'ArrowRight') {
-        player2.velo.x = veloWalk
-      }
+    player2.velo.x = 0;
+    if (keys.ArrowLeft.pressed && player2.lastKey === 'ArrowLeft') {
+      player2.velo.x = -veloWalk;
+    } else if (keys.ArrowRight.pressed && player2.lastKey === 'ArrowRight') {
+      player2.velo.x = veloWalk
     }
 
     if (resultRef.current) {
