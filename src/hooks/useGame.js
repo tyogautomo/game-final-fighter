@@ -1,15 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useRef, useState } from "react";
 
-import { useSprite } from "../model/Sprite";
+import { Sprite } from "../model/Sprite";
 
 const useGame = () => {
+  const [timer, setTimer] = useState(60);
   const [playerOneHealth, setPlayerOneHealth] = useState(100);
   const [playerTwoHealth, setPlayerTwoHealth] = useState(100);
 
   const canvasRef = useRef(null);
 
-  const { Sprite } = useSprite();
   const veloWalk = 5;
   const veloJump = 20;
 
@@ -21,6 +21,7 @@ const useGame = () => {
   }
 
   useEffect(() => {
+    console.log('test');
     initCanvas();
 
     const { player1, player2, ctx } = initPlayers();
@@ -28,7 +29,17 @@ const useGame = () => {
     animate(player1, player2, ctx);
 
     initEventListener(player1, player2);
+    setTimeout(() => {
+      runTimer();
+    }, 1000);
   }, []);
+
+  const runTimer = () => {
+    if (timer > 0) {
+      setTimeout(runTimer, 1000);
+      setTimer(prev => prev - 1);
+    }
+  };
 
   const initEventListener = (player1, player2) => {
     window.addEventListener('keydown', onKeydown(player1, player2));
@@ -163,15 +174,22 @@ const useGame = () => {
     // detect collision
     if (rectangularCollision(player1, player2) && player1.isAttacking) {
       player1.isAttacking = false;
-      console.log('P1 Attacking');
+      // console.log('P1 Attacking');
+      setPlayerTwoHealth(prev => prev - 5);
     }
     if (rectangularCollision(player1, player2) && player2.isAttacking) {
       player2.isAttacking = false;
-      console.log('P2 Attacking');
+      // console.log('P2 Attacking');
+      setPlayerOneHealth(prev => prev - 5);
     }
   };
 
-  return { canvasRef, playerOneHealth, playerTwoHealth };
+  return {
+    timer,
+    canvasRef,
+    playerOneHealth,
+    playerTwoHealth,
+  };
 };
 
 export { useGame };

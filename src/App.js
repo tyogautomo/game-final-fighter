@@ -13,19 +13,19 @@ import {
 } from './styles';
 
 function App() {
-  const { canvasRef, playerOneHealth, playerTwoHealth } = useGame();
+  const { canvasRef, playerOneHealth, playerTwoHealth, timer } = useGame();
 
   const renderHealthBar = () => {
     return (
       <TopBarContainer>
         <PlayerOneBar>
-          <PlayerOneInner />
+          <PlayerOneInner health={playerOneHealth} />
         </PlayerOneBar>
         <Timer>
-          <Counter>60</Counter>
+          <Counter>{timer}</Counter>
         </Timer>
         <PlayerTwoBar>
-          <PlayerTwoInner />
+          <PlayerTwoInner health={playerTwoHealth} />
         </PlayerTwoBar>
       </TopBarContainer>
     );
