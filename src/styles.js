@@ -1,4 +1,4 @@
-import tw from 'twin.macro';
+import tw, { styled } from 'twin.macro';
 import { createGlobalStyle } from 'styled-components';
 
 export const GlobalStyles = createGlobalStyle`
@@ -7,8 +7,18 @@ export const GlobalStyles = createGlobalStyle`
   }
 `;
 export const Container = tw.div`relative width[1024px] height[576px]`;
-export const TopBarContainer = tw.div`absolute border-width[1px] w-full flex`;
+export const TopBarContainer = tw.div`absolute w-full flex px-5 py-4 justify-between items-center`;
 export const Canvas = tw.canvas``;
-export const PlayerOneBar = tw.div``;
-export const PlayerTwoBar = tw.div``;
-export const Timer = tw.div``;
+
+export const PlayerOneBar = tw.div`bg-red-600 w-full h-12 rounded-l-full relative overflow-hidden`;
+export const PlayerOneInner = styled.div(() => [
+  tw`bg-green-400 absolute h-full w-full`,
+]);
+
+export const PlayerTwoBar = tw.div`bg-red-600 w-full h-12 rounded-r-full relative overflow-hidden`;
+export const PlayerTwoInner = styled.div(() => [
+  tw`bg-green-400 absolute h-full w-full`,
+]);
+
+export const Timer = tw.div`flex justify-center items-center rounded-lg w-20 h-20 flex-shrink-0 bg-white`;
+export const Counter = tw.div`flex justify-center items-center bg-yellow-500 w-16 h-16 rounded-full font-size[2.2rem] font-bold text-gray-800`;
