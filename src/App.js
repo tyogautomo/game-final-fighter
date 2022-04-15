@@ -1,11 +1,21 @@
-import './App.css';
 import { useGame } from './hooks/useGame';
+import { Canvas, Container, TopBarContainer, GlobalStyles } from './styles';
 
 function App() {
   const { canvasRef } = useGame();
 
   return (
-    <canvas ref={canvasRef} />
+    <Container>
+      <GlobalStyles />
+      <TopBarContainer>
+        <div>OLELELELEL</div>
+        <div>OLELELELEL</div>
+        <div>OLELELELEL</div>
+        <div>OLELELELEL</div>
+        <div>OLELELELEL</div>
+      </TopBarContainer>
+      <Canvas ref={canvasRef} />
+    </Container>
   );
 }
 

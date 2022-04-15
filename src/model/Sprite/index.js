@@ -52,7 +52,7 @@ const useSprite = () => {
       this.isAttacking = true;
       setTimeout(() => {
         this.isAttacking = false;
-      }, 100);
+      }, 50);
     }
 
   };

@@ -62,6 +62,9 @@ const useGame = () => {
       case 'ArrowUp':
         player2.velo.y = -veloJump;
         break;
+      case 'Enter':
+        player2.attack();
+        break;
       default:
         break;
     }
@@ -122,6 +125,13 @@ const useGame = () => {
     return { player1, player2, ctx }
   };
 
+  const rectangularCollision = (rect1, rect2) => {
+    return (rect1.attackBox.pos.x + rect1.attackBox.width >= rect2.pos.x)
+      && (rect1.attackBox.pos.x <= rect2.pos.x + rect2.width)
+      && (rect1.attackBox.pos.y + rect1.attackBox.height >= rect2.pos.y)
+      && (rect1.attackBox.pos.y <= rect2.pos.y + rect2.height)
+  };
+
   const animate = (player1, player2, ctx) => {
     window.requestAnimationFrame(() => animate(player1, player2, ctx));
 
@@ -148,15 +158,13 @@ const useGame = () => {
     }
 
     // detect collision
-    if (
-      (player1.attackBox.pos.x + player1.attackBox.width >= player2.pos.x)
-      && (player1.attackBox.pos.x <= player2.pos.x + player2.width)
-      && (player1.attackBox.pos.y + player1.attackBox.height >= player2.pos.y)
-      && (player1.attackBox.pos.y <= player2.pos.y + player2.height)
-      && player1.isAttacking
-    ) {
+    if (rectangularCollision(player1, player2) && player1.isAttacking) {
       player1.isAttacking = false;
-      console.log('HIT');
+      console.log('P1 Attacking');
+    }
+    if (rectangularCollision(player1, player2) && player2.isAttacking) {
+      player2.isAttacking = false;
+      console.log('P2 Attacking');
     }
   };
 
