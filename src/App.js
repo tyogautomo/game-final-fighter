@@ -1,9 +1,13 @@
 import { useGame } from './hooks/useGame';
 import {
+  Title,
   Timer,
   Canvas,
   Result,
+  Layout,
+  Footer,
   Counter,
+  SpanBold,
   Container,
   GlobalStyles,
   PlayerOneBar,
@@ -37,11 +41,16 @@ function App() {
   );
 
   return (
-    <Container>
-      <GlobalStyles />
-      {renderHealthBar()}
-      <Canvas ref={canvasRef} />
-    </Container>
+    <Layout>
+      <Title> -=Final Fighter=- </Title>
+      <Container>
+        <GlobalStyles />
+        {renderHealthBar()}
+        <Canvas ref={canvasRef} />
+      </Container>
+      <Footer>Recreated by <SpanBold>Yoga Utomo</SpanBold></Footer>
+      <Footer smaller>Assets by <SpanBold>brullov</SpanBold> and <SpanBold>luizmelo</SpanBold>, a tutorial by <SpanBold>Chris Course</SpanBold></Footer>
+    </Layout>
   );
 }
 

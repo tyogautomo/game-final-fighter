@@ -3,25 +3,48 @@ import { useEffect, useRef, useState } from "react";
 
 import { Sprite } from "../model/Sprite";
 import { Fighter } from '../model/Fighter';
+import bgmAudio from '../assets/audios/bgm.mp3';
+import winAudio from '../assets/audios/win.mp3';
 import shopImg from '../assets/images/shop.png';
+import hitAudio from '../assets/audios/hit.mp3';
+import drawAudio from '../assets/audios/draw.mp3';
+import slashAudio from '../assets/audios/slash.mp3';
+import starterAudio from '../assets/audios/starter.mp3';
 import playerOneRun from '../assets/images/p1/Run.png';
 import playerOneJump from '../assets/images/p1/Jump.png';
 import playerOneIdle from '../assets/images/p1/Idle.png';
 import playerOneFall from '../assets/images/p1/Fall.png';
 import playerOneAttack1 from '../assets/images/p1/Attack1.png';
+import playerOneTakeHit from '../assets/images/p1/Take Hit - white silhouette.png';
+import playerOneDeath from '../assets/images/p1/Death.png';
+import playerTwoRun from '../assets/images/p2/Run.png';
+import playerTwoJump from '../assets/images/p2/Jump.png';
+import playerTwoIdle from '../assets/images/p2/Idle.png';
+import playerTwoFall from '../assets/images/p2/Fall.png';
+import playerTwoAttack1 from '../assets/images/p2/Attack1.png';
+import playerTwoTakeHit from '../assets/images/p2/Take hit.png';
+import playerTwoDeath from '../assets/images/p2/Death.png';
 import backgroundImg from '../assets/images/background.png';
 import { TIE, PLAYER_1_WIN, PLAYER_2_WIN } from '../utils/constant';
 
 const useGame = () => {
   const [timer, setTimer] = useState(30);
+  const [result, setResult] = useState('');
+  const slashSound1 = useRef(new Audio(slashAudio));
+  const slashSound2 = useRef(new Audio(slashAudio));
   const [playerOneHealth, setPlayerOneHealth] = useState(100);
   const [playerTwoHealth, setPlayerTwoHealth] = useState(100);
-  const [result, setResult] = useState('');
 
   const clockRef = useRef(null);
   const counter = useRef(timer);
   const canvasRef = useRef(null);
   const resultRef = useRef(result);
+  const winSound = useRef(new Audio(winAudio));
+  const bgmSound = useRef(new Audio(bgmAudio));
+  const hitSound1 = useRef(new Audio(hitAudio));
+  const hitSound2 = useRef(new Audio(hitAudio));
+  const drawSound = useRef(new Audio(drawAudio));
+  const starterSound = useRef(new Audio(starterAudio));
   const playerOneHealthRef = useRef(playerOneHealth);
   const playerTwoHealthRef = useRef(playerTwoHealth);
 
@@ -36,6 +59,11 @@ const useGame = () => {
   }
 
   useEffect(() => {
+    starterSound.current.play();
+    setTimeout(() => {
+      bgmSound.current.volume = 0.6;
+      bgmSound.current.play();
+    }, 2200);
     initCanvas();
 
     const { player1, player2, background, ctx, shop } = initSprites();
@@ -57,6 +85,11 @@ const useGame = () => {
         finalResult = PLAYER_1_WIN;
       } else {
         finalResult = PLAYER_2_WIN;
+      }
+      if (finalResult === TIE) {
+        playSound(drawSound);
+      } else {
+        playSound(winSound);
       }
       resultRef.current = finalResult;
       setResult(finalResult);
@@ -90,7 +123,9 @@ const useGame = () => {
           player1.velo.y = -veloJump;
           break;
         case ' ':
-          player1.attack();
+          if (player1.image !== player1.sprites.takeHit.image) {
+            player1.attack();
+          }
           break;
         //  player 2
         case 'ArrowLeft':
@@ -105,7 +140,9 @@ const useGame = () => {
           player2.velo.y = -veloJump;
           break;
         case 'Enter':
-          player2.attack();
+          if (player2.image !== player2.sprites.takeHit.image) {
+            player2.attack();
+          }
           break;
         default:
           break;
@@ -165,13 +202,18 @@ const useGame = () => {
       velo: { x: 0, y: 4 },
       pos: { x: 70, y: 0 },
       height: 150,
+      width: 80,
       color: 'red',
       attColor: 'blue',
-      offset: { x: 0, y: 0 },
-      charOffset: { x: 0, y: 155 },
+      charOffset: { x: 200, y: 155 },
       image: playerOneIdle,
       frames: 8,
       scale: 2.5,
+      attackBox: {
+        offset: { x: 115, y: 60 },
+        width: 150,
+        height: 50,
+      },
       sprites: {
         idle: {
           src: playerOneIdle,
@@ -192,6 +234,14 @@ const useGame = () => {
         attack1: {
           src: playerOneAttack1,
           frames: 6
+        },
+        takeHit: {
+          src: playerOneTakeHit,
+          frames: 4
+        },
+        death: {
+          src: playerOneDeath,
+          frames: 6,
         }
       }
     });
@@ -200,9 +250,48 @@ const useGame = () => {
       velo: { x: 0, y: 4 },
       pos: { x: 500, y: 100 },
       height: 150,
+      width: 50,
       color: 'green',
       attColor: 'purple',
-      offset: { x: -50, y: 0 }
+      charOffset: { x: 200, y: 137 },
+      image: playerTwoIdle,
+      frames: 4,
+      scale: 2.25,
+      attackBox: {
+        offset: { x: -150, y: 60 },
+        width: 120,
+        height: 50,
+      },
+      sprites: {
+        idle: {
+          src: playerTwoIdle,
+          frames: 4
+        },
+        run: {
+          src: playerTwoRun,
+          frames: 8
+        },
+        jump: {
+          src: playerTwoJump,
+          frames: 2
+        },
+        fall: {
+          src: playerTwoFall,
+          frames: 2
+        },
+        attack1: {
+          src: playerTwoAttack1,
+          frames: 4
+        },
+        takeHit: {
+          src: playerTwoTakeHit,
+          frames: 3
+        },
+        death: {
+          src: playerTwoDeath,
+          frames: 7,
+        }
+      }
     });
 
     return { player1, player2, background, shop, ctx }
@@ -215,19 +304,28 @@ const useGame = () => {
       && (rect1.attackBox.pos.y <= rect2.pos.y + rect2.height)
   };
 
-  const handleAttack = (setter, ref, winMsg) => {
-    const decrement = 5;
+  const handleAttack = (setter, ref, winMsg, opponenet, attacker) => {
+    const decrement = 20;
     if (ref.current > 0) {
       ref.current = ref.current - decrement;
       setter(prev => prev - decrement);
 
       if (ref.current === 0) {
         clearTimeout(clockRef.current);
+        opponenet.switchSprite('death');
         resultRef.current = winMsg;
         setResult(winMsg);
+        winSound.current.play();
       }
     }
   };
+
+  const playSound = sound => {
+    sound.current.volume = 0.5;
+    sound.current.pause();
+    sound.current.currentTime = 0;
+    sound.current.play();
+  }
 
   const animate = (params) => {
     const { player1, player2, background, ctx, shop } = params;
@@ -241,10 +339,11 @@ const useGame = () => {
     shop.update(ctx);
 
     player1.update(ctx, canvas);
-    // player2.update(ctx, canvas);
+    player2.update(ctx, canvas);
 
 
     // handle movement
+    // player - 1
     player1.velo.x = 0;
     if (keys.a.pressed && player1.lastKey === 'a') {
       player1.velo.x = -veloWalk;
@@ -261,26 +360,60 @@ const useGame = () => {
       player1.switchSprite('fall');
     }
 
+    // player - 2
     player2.velo.x = 0;
     if (keys.ArrowLeft.pressed && player2.lastKey === 'ArrowLeft') {
       player2.velo.x = -veloWalk;
+      player2.switchSprite('run');
     } else if (keys.ArrowRight.pressed && player2.lastKey === 'ArrowRight') {
       player2.velo.x = veloWalk
+      player2.switchSprite('run');
+    } else {
+      player2.switchSprite('idle');
+    }
+    if (player2.velo.y < 0) {
+      player2.switchSprite('jump');
+    } else if (player2.velo.y > 0) {
+      player2.switchSprite('fall');
     }
 
+    // disable players movement when finish
     if (resultRef.current) {
+      player1.lastKey = '';
+      player2.lastKey = '';
       player1.velo.x = 0;
       player2.velo.x = 0;
+
+      if (playerOneHealthRef.current > 0 && playerTwoHealthRef.current > 0) {
+        player1.switchSprite('idle');
+        player2.switchSprite('idle');
+      }
+      if (player1.isDead) player2.switchSprite('idle');
+      if (player2.isDead) player1.switchSprite('idle');
     }
 
     // detect collision
-    if (rectangularCollision(player1, player2) && player1.isAttacking) {
+    // player - 1
+    if (rectangularCollision(player1, player2) && player1.isAttacking && player1.framesCurrent === 4) {
+      handleAttack(setPlayerTwoHealth, playerTwoHealthRef, PLAYER_1_WIN, player2, player1);
+      playSound(hitSound1);
+      player2.takeHit();
       player1.isAttacking = false;
-      handleAttack(setPlayerTwoHealth, playerTwoHealthRef, PLAYER_1_WIN);
     }
-    if (rectangularCollision(player1, player2) && player2.isAttacking) {
+    if (player1.isAttacking && player1.framesCurrent === 4) {
+      playSound(slashSound1);
+      player1.isAttacking = false;
+    }
+    // player - 2
+    if (rectangularCollision(player2, player1) && player2.isAttacking && player2.framesCurrent === 2) {
+      handleAttack(setPlayerOneHealth, playerOneHealthRef, PLAYER_2_WIN, player1, player2);
+      playSound(hitSound2);
+      player1.takeHit();
       player2.isAttacking = false;
-      handleAttack(setPlayerOneHealth, playerOneHealthRef, PLAYER_2_WIN);
+    }
+    if (player2.isAttacking && player2.framesCurrent === 2) {
+      playSound(slashSound2);
+      player2.isAttacking = false;
     }
   };
 

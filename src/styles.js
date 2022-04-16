@@ -6,12 +6,17 @@ export const GlobalStyles = createGlobalStyle`
     ${tw`text-purple-300 m-0 p-0 box-sizing[border-box] border[0 solid] font-sans`};
   }
 `;
-export const Container = tw.div`relative inline-block`;
+export const Layout = tw.div`width[100vw] height[100vh] flex flex-col justify-center items-center background-color[#292929]`;
+export const LeftSide = tw.div``;
+export const Title = tw.div`text-gray-200 font-size[4rem] font-bold mb-7`
+export const Footer = styled.div(({ smaller }) => [tw`text-gray-400 font-size[.9rem] font-light mb-2`, smaller && tw`font-size[.8rem]`]);
+export const SpanBold = tw.span`font-bold`
+export const Container = tw.div`relative inline-block border-width[10px] border-gray-700 rounded-lg box-shadow[0 10px 10px rgba(0,0,0,.2)] mb-5`;
 export const TopBarContainer = tw.div`absolute flex flex-col items-center w-full`;
 export const StatusContainer = tw.div`w-full flex px-5 py-4 justify-between items-center mb-5`;
 export const Canvas = tw.canvas`block`;
 
-export const PlayerOneBar = tw.div`bg-red-600 w-full h-12 rounded-l-full relative overflow-hidden`;
+export const PlayerOneBar = tw.div`bg-red-600 w-full h-12 rounded-l-full relative overflow-hidden border-width[3px] border-right-width[0] border-white`;
 export const PlayerOneInner = styled.div(({ health }) => [
   tw`bg-green-400 absolute h-full right-0 transition[all 0.3s]`,
   css`
@@ -19,7 +24,7 @@ export const PlayerOneInner = styled.div(({ health }) => [
   `,
 ]);
 
-export const PlayerTwoBar = tw.div`bg-red-600 w-full h-12 rounded-r-full relative overflow-hidden`;
+export const PlayerTwoBar = tw.div`bg-red-600 w-full h-12 rounded-r-full relative overflow-hidden border-width[3px] border-left-width[0] border-white`;
 export const PlayerTwoInner = styled.div(({ health }) => [
   tw`bg-green-400 absolute h-full transition[all 0.1s]`,
   css`
