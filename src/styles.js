@@ -6,10 +6,14 @@ export const GlobalStyles = createGlobalStyle`
     ${tw`text-purple-300 m-0 p-0 box-sizing[border-box] border[0 solid] font-sans`};
   }
 `;
-export const Layout = tw.div`width[100vw] height[100vh] flex flex-col justify-center items-center background-color[#292929]`;
-export const LeftSide = tw.div``;
-export const Title = tw.div`text-gray-200 font-size[4rem] font-bold mb-7`
+export const Layout = tw.div`width[100vw] height[100vh] flex justify-center items-center background-color[#292929]`;
+export const LeftSide = tw.div`px-6 flex-1 flex flex-col items-end`;
+export const MiddleSide = tw.div`flex flex-col items-center`;
+export const RightSide = tw.div`px-6 flex-1`;
+export const Parag = tw.p``;
+export const Title = tw.div`text-gray-200 font-size[2rem] font-bold mb-7`
 export const Footer = styled.div(({ smaller }) => [tw`text-gray-400 font-size[.9rem] font-light mb-2`, smaller && tw`font-size[.8rem]`]);
+export const Link = tw.a`text-decoration[none]`;
 export const SpanBold = tw.span`font-bold`
 export const Container = tw.div`relative inline-block border-width[10px] border-gray-700 rounded-lg box-shadow[0 10px 10px rgba(0,0,0,.2)] mb-5`;
 export const TopBarContainer = tw.div`absolute flex flex-col items-center w-full`;
