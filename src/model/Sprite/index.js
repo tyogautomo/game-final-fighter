@@ -1,57 +1,48 @@
-const gravity = 0.7;
-
 class Sprite {
-  constructor({ pos, velo, height, color, attColor, offset }) {
+  constructor({ pos, image, scale = 1, frames = 1, charOffset = { x: 0, y: 0 } }) {
     this.pos = pos;
-    this.velo = velo;
-    this.height = height;
+    this.height = 150;
     this.width = 50;
-    this.lastKey = '';
-    this.color = color;
-    this.attColor = attColor;
-    this.attackBox = {
-      pos: {
-        x: this.pos.x,
-        y: this.pos.y,
-      },
-      offset,
-      width: 100,
-      height: 50,
-    }
-    this.isAttacking = false;
+    this.image = new Image();
+    this.image.src = image;
+    this.scale = scale;
+    this.framesMax = frames;
+    this.framesCurrent = 0;
+    this.framesElapsed = 0;
+    this.framesHold = 10;
+    this.charOffset = charOffset;
   }
 
   draw(ctx) {
-    ctx.fillStyle = this.color;
-    ctx.fillRect(this.pos.x, this.pos.y, this.width, this.height);
+    ctx.drawImage(
+      this.image,
+      // crop
+      this.framesCurrent * (this.image.width / this.framesMax),
+      0,
+      this.image.width / this.framesMax,
+      this.image.height,
+      // size and position
+      this.pos.x - this.charOffset.x,
+      this.pos.y - this.charOffset.y,
+      (this.image.width / this.framesMax) * this.scale,
+      this.image.height * this.scale
+    );
+  }
 
-    if (this.isAttacking) {
-      ctx.fillStyle = this.attColor;
-      ctx.fillRect(this.attackBox.pos.x + this.attackBox.offset.x, this.attackBox.pos.y, this.attackBox.width, this.attackBox.height);
+  animateFrames() {
+    this.framesElapsed++
+    if (this.framesElapsed % this.framesHold === 0) {
+      if (this.framesCurrent < this.framesMax - 1) {
+        this.framesCurrent++
+      } else {
+        this.framesCurrent = 0;
+      }
     }
   }
 
-  update(ctx, canvas) {
+  update(ctx) {
     this.draw(ctx);
-
-    this.pos.x += this.velo.x;
-    this.pos.y += this.velo.y;
-
-    this.attackBox.pos.x += this.velo.x;
-    this.attackBox.pos.y += this.velo.y;
-
-    if (((this.pos.y + this.height + this.velo.y) >= canvas.height)) {
-      this.velo.y = 0;
-    } else {
-      this.velo.y += gravity;
-    }
-  }
-
-  attack() {
-    this.isAttacking = true;
-    setTimeout(() => {
-      this.isAttacking = false;
-    }, 50);
+    this.animateFrames();
   }
 
 };

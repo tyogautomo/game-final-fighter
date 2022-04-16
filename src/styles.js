@@ -13,7 +13,7 @@ export const Canvas = tw.canvas`block`;
 
 export const PlayerOneBar = tw.div`bg-red-600 w-full h-12 rounded-l-full relative overflow-hidden`;
 export const PlayerOneInner = styled.div(({ health }) => [
-  tw`bg-green-400 absolute h-full right-0 transition[all 0.1s]`,
+  tw`bg-green-400 absolute h-full right-0 transition[all 0.3s]`,
   css`
     width: ${health}%
   `,
@@ -30,4 +30,4 @@ export const PlayerTwoInner = styled.div(({ health }) => [
 export const Timer = tw.div`flex justify-center items-center rounded-lg w-20 h-20 flex-shrink-0 bg-white`;
 export const Counter = tw.div`flex justify-center items-center bg-yellow-500 w-16 h-16 rounded-full font-size[2.2rem] font-bold text-gray-800`;
 
-export const Result = tw.div`font-size[4rem] font-bold text-gray-500`;
+export const Result = tw.div`font-size[4rem] font-bold text-white`;

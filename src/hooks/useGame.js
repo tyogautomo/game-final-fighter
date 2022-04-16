@@ -2,14 +2,23 @@
 import { useEffect, useRef, useState } from "react";
 
 import { Sprite } from "../model/Sprite";
+import { Fighter } from '../model/Fighter';
+import shopImg from '../assets/images/shop.png';
+import playerOneRun from '../assets/images/p1/Run.png';
+import playerOneJump from '../assets/images/p1/Jump.png';
+import playerOneIdle from '../assets/images/p1/Idle.png';
+import playerOneFall from '../assets/images/p1/Fall.png';
+import playerOneAttack1 from '../assets/images/p1/Attack1.png';
+import backgroundImg from '../assets/images/background.png';
 import { TIE, PLAYER_1_WIN, PLAYER_2_WIN } from '../utils/constant';
 
 const useGame = () => {
-  const [timer, setTimer] = useState(5);
+  const [timer, setTimer] = useState(30);
   const [playerOneHealth, setPlayerOneHealth] = useState(100);
   const [playerTwoHealth, setPlayerTwoHealth] = useState(100);
   const [result, setResult] = useState('');
 
+  const clockRef = useRef(null);
   const counter = useRef(timer);
   const canvasRef = useRef(null);
   const resultRef = useRef(result);
@@ -29,9 +38,9 @@ const useGame = () => {
   useEffect(() => {
     initCanvas();
 
-    const { player1, player2, ctx } = initPlayers();
+    const { player1, player2, background, ctx, shop } = initSprites();
 
-    animate(player1, player2, ctx);
+    animate({ player1, player2, background, ctx, shop });
 
     initEventListener(player1, player2);
     setTimeout(() => {
@@ -52,10 +61,10 @@ const useGame = () => {
       resultRef.current = finalResult;
       setResult(finalResult);
     }
-    if (counter.current > 0 && !resultRef.current) {
+    if (counter.current > 0) {
       counter.current = counter.current - 1
       setTimer(prev => prev - 1);
-      setTimeout(runTimer, 1000);
+      clockRef.current = setTimeout(runTimer, 1000);
     }
 
   };
@@ -137,19 +146,57 @@ const useGame = () => {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   };
 
-  const initPlayers = () => {
+  const initSprites = () => {
     const ctx = canvasRef.current.getContext('2d');
 
-    const player1 = new Sprite({
-      velo: { x: 0, y: 4 },
+    const background = new Sprite({
       pos: { x: 0, y: 0 },
+      image: backgroundImg,
+    })
+
+    const shop = new Sprite({
+      pos: { x: 650, y: 161 },
+      image: shopImg,
+      scale: 2.5,
+      frames: 6,
+    })
+
+    const player1 = new Fighter({
+      velo: { x: 0, y: 4 },
+      pos: { x: 70, y: 0 },
       height: 150,
       color: 'red',
       attColor: 'blue',
-      offset: { x: 0, y: 0 }
+      offset: { x: 0, y: 0 },
+      charOffset: { x: 0, y: 155 },
+      image: playerOneIdle,
+      frames: 8,
+      scale: 2.5,
+      sprites: {
+        idle: {
+          src: playerOneIdle,
+          frames: 8
+        },
+        run: {
+          src: playerOneRun,
+          frames: 8
+        },
+        jump: {
+          src: playerOneJump,
+          frames: 2
+        },
+        fall: {
+          src: playerOneFall,
+          frames: 2
+        },
+        attack1: {
+          src: playerOneAttack1,
+          frames: 6
+        }
+      }
     });
 
-    const player2 = new Sprite({
+    const player2 = new Fighter({
       velo: { x: 0, y: 4 },
       pos: { x: 500, y: 100 },
       height: 150,
@@ -158,7 +205,7 @@ const useGame = () => {
       offset: { x: -50, y: 0 }
     });
 
-    return { player1, player2, ctx }
+    return { player1, player2, background, shop, ctx }
   };
 
   const rectangularCollision = (rect1, rect2) => {
@@ -175,29 +222,43 @@ const useGame = () => {
       setter(prev => prev - decrement);
 
       if (ref.current === 0) {
+        clearTimeout(clockRef.current);
         resultRef.current = winMsg;
         setResult(winMsg);
       }
     }
   };
 
-  const animate = (player1, player2, ctx) => {
-    window.requestAnimationFrame(() => animate(player1, player2, ctx));
+  const animate = (params) => {
+    const { player1, player2, background, ctx, shop } = params;
+    window.requestAnimationFrame(() => animate(params));
 
     const canvas = canvasRef.current;
     ctx.fillStyle = 'black';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+    background.update(ctx);
+    shop.update(ctx);
+
     player1.update(ctx, canvas);
-    player2.update(ctx, canvas);
+    // player2.update(ctx, canvas);
 
 
     // handle movement
     player1.velo.x = 0;
     if (keys.a.pressed && player1.lastKey === 'a') {
       player1.velo.x = -veloWalk;
+      player1.switchSprite('run');
     } else if (keys.d.pressed && player1.lastKey === 'd') {
       player1.velo.x = veloWalk
+      player1.switchSprite('run');
+    } else {
+      player1.switchSprite('idle');
+    }
+    if (player1.velo.y < 0) {
+      player1.switchSprite('jump');
+    } else if (player1.velo.y > 0) {
+      player1.switchSprite('fall');
     }
 
     player2.velo.x = 0;
