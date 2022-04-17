@@ -25,10 +25,10 @@ import playerTwoAttack1 from '../assets/images/p2/Attack1.png';
 import playerTwoTakeHit from '../assets/images/p2/Take hit.png';
 import playerTwoDeath from '../assets/images/p2/Death.png';
 import backgroundImg from '../assets/images/background.png';
-import { TIE, PLAYER_1_WIN, PLAYER_2_WIN } from '../utils/constant';
+import { TIE, PLAYER_1_WIN, PLAYER_2_WIN, TIMES } from '../utils/constant';
 
 const useGame = () => {
-  const [timer, setTimer] = useState(30);
+  const [timer, setTimer] = useState(TIMES);
   const [result, setResult] = useState('');
   const [isStarted, setIsStarted] = useState(false);
 
@@ -128,6 +128,10 @@ const useGame = () => {
       }
       resultRef.current = finalResult;
       setResult(finalResult);
+      setTimeout(() => {
+        setIsStarted(false);
+        startedRef.current = false;
+      }, 1000);
     }
     if (counter.current > 0) {
       counter.current = counter.current - 1
@@ -379,8 +383,8 @@ const useGame = () => {
     playerOneHealthRef.current = 100;
     playerTwoHealthRef.current = 100;
 
-    setTimer(30);
-    counter.current = 30;
+    setTimer(TIMES);
+    counter.current = TIMES;
 
     player1Ref.current.pos = { x: 70, y: 0 };
     player1Ref.current.isDead = false;
