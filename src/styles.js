@@ -15,7 +15,7 @@ export const Title = tw.div`text-gray-200 font-size[2rem] font-bold mb-7`
 export const Footer = styled.div(({ smaller }) => [tw`text-gray-400 font-size[.9rem] font-light mb-2`, smaller && tw`font-size[.8rem]`]);
 export const Link = tw.a`text-decoration[none]`;
 export const SpanBold = tw.span`font-bold`
-export const Container = tw.div`relative inline-block border-width[10px] border-gray-700 rounded-lg box-shadow[0 10px 10px rgba(0,0,0,.2)] mb-5`;
+export const Container = tw.div`relative flex flex-col items-center border-width[10px] border-gray-700 rounded-lg box-shadow[0 10px 10px rgba(0,0,0,.2)] mb-5`;
 export const TopBarContainer = tw.div`absolute flex flex-col items-center w-full`;
 export const StatusContainer = tw.div`w-full flex px-5 py-4 justify-between items-center mb-5`;
 export const Canvas = tw.canvas`block`;
@@ -40,3 +40,16 @@ export const Timer = tw.div`flex justify-center items-center rounded-lg w-20 h-2
 export const Counter = tw.div`flex justify-center items-center bg-yellow-500 w-16 h-16 rounded-full font-size[2.2rem] font-bold text-gray-800`;
 
 export const Result = tw.div`font-size[4rem] font-bold text-white`;
+export const Overlay = styled.div(({ isStarted }) => [
+  tw`absolute flex justify-center items-center top-0 left-0 right-0 bottom-0 background-color[rgba(0,0,0,.6)] transition[all 0.3s ease-out]`,
+  isStarted && tw`opacity-0`,
+]);
+export const StartOver = styled.div`  
+  ${tw`bg-white border-width[3px] width[400px] flex justify-center items-center p-4 font-bold font-size[2rem] text-gray-600 rounded-2xl cursor-pointer box-shadow[0 10px 10px rgba(0,0,0,.2)] transition[all 0.1s ease-in]`}
+  :hover {
+    transform: scale(1.05);
+  }
+  :active {
+    transform: scale(1);
+  }
+`;

@@ -79,14 +79,19 @@ class Fighter extends Sprite {
     this.switchSprite('take hit');
   }
 
-  switchSprite(sprite) {
+  switchSprite(sprite, isRestart) {
     if ((this.image === this.sprites.attack1.image) && (this.framesCurrent < this.sprites.attack1.frames - 1)) return;
     if ((this.image === this.sprites.takeHit.image) && (this.framesCurrent < this.sprites.takeHit.frames - 1)) return;
     if ((this.image === this.sprites.death.image)) {
+      console.log('masuk modar')
       if (this.framesCurrent === this.sprites.death.frames - 1) {
         this.isDead = true;
       }
-      return;
+      if (!isRestart) {
+        return;
+      } else {
+        this.isDead = false;
+      }
     }
 
     switch (sprite) {

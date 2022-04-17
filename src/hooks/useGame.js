@@ -30,20 +30,25 @@ import { TIE, PLAYER_1_WIN, PLAYER_2_WIN } from '../utils/constant';
 const useGame = () => {
   const [timer, setTimer] = useState(30);
   const [result, setResult] = useState('');
-  const slashSound1 = useRef(new Audio(slashAudio));
-  const slashSound2 = useRef(new Audio(slashAudio));
+  const [isStarted, setIsStarted] = useState(false);
+
   const [playerOneHealth, setPlayerOneHealth] = useState(100);
   const [playerTwoHealth, setPlayerTwoHealth] = useState(100);
 
   const clockRef = useRef(null);
+  const player1Ref = useRef(null);
+  const player2Ref = useRef(null);
   const counter = useRef(timer);
   const canvasRef = useRef(null);
   const resultRef = useRef(result);
+  const startedRef = useRef(isStarted);
   const winSound = useRef(new Audio(winAudio));
   const bgmSound = useRef(new Audio(bgmAudio));
   const hitSound1 = useRef(new Audio(hitAudio));
   const hitSound2 = useRef(new Audio(hitAudio));
   const drawSound = useRef(new Audio(drawAudio));
+  const slashSound1 = useRef(new Audio(slashAudio));
+  const slashSound2 = useRef(new Audio(slashAudio));
   const starterSound = useRef(new Audio(starterAudio));
   const playerOneHealthRef = useRef(playerOneHealth);
   const playerTwoHealthRef = useRef(playerTwoHealth);
@@ -56,25 +61,55 @@ const useGame = () => {
     d: { pressed: false },
     ArrowLeft: { pressed: false },
     ArrowRight: { pressed: false },
-  }
+  };
 
   useEffect(() => {
-    starterSound.current.play();
-    setTimeout(() => {
-      bgmSound.current.volume = 0.6;
-      bgmSound.current.play();
-    }, 2200);
+    muteAudio();
     initCanvas();
 
     const { player1, player2, background, ctx, shop } = initSprites();
+    player1Ref.current = player1;
+    player2Ref.current = player2;
 
     animate({ player1, player2, background, ctx, shop });
 
     initEventListener(player1, player2);
-    setTimeout(() => {
-      runTimer();
-    }, 1000);
   }, []);
+
+  useEffect(() => {
+    if (isStarted) {
+      muteAudio();
+      winSound.current.muted = false;
+      bgmSound.current.muted = false;
+      hitSound1.current.muted = false;
+      hitSound2.current.muted = false;
+      drawSound.current.muted = false;
+      starterSound.current.muted = false;
+      slashSound1.current.muted = false;
+      slashSound2.current.muted = false;
+
+      starterSound.current.play();
+      setTimeout(() => {
+        bgmSound.current.volume = 0.6;
+        playSound(bgmSound);
+      }, 2200);
+
+      setTimeout(() => {
+        runTimer();
+      }, 1000);
+    }
+  }, [isStarted]);
+
+  const muteAudio = () => {
+    winSound.current.muted = true;
+    bgmSound.current.muted = true;
+    hitSound1.current.muted = true;
+    hitSound2.current.muted = true;
+    drawSound.current.muted = true;
+    starterSound.current.muted = true;
+    slashSound1.current.muted = true;
+    slashSound2.current.muted = true;
+  };
 
   const runTimer = () => {
     if (counter.current === 0) {
@@ -108,7 +143,7 @@ const useGame = () => {
   };
 
   const onKeydown = (player1, player2) => (e) => {
-    if (!resultRef.current) {
+    if (!resultRef.current && startedRef.current) {
       switch (e.key) {
         // player 1
         case 'a':
@@ -150,8 +185,8 @@ const useGame = () => {
     }
   };
 
-  const onKeyup = (player1, player2) => (e) => {
-    if (!resultRef.current) {
+  const onKeyup = () => (e) => {
+    if (!resultRef.current && startedRef.current) {
       switch (e.key) {
         // player 1
         case 'a':
@@ -171,7 +206,7 @@ const useGame = () => {
           break;
       }
     }
-  }
+  };
 
   const initCanvas = () => {
     const canvas = canvasRef.current;
@@ -315,7 +350,11 @@ const useGame = () => {
         opponenet.switchSprite('death');
         resultRef.current = winMsg;
         setResult(winMsg);
-        winSound.current.play();
+        playSound(winSound);
+        setTimeout(() => {
+          setIsStarted(false);
+          startedRef.current = false;
+        }, 1000);
       }
     }
   };
@@ -325,7 +364,38 @@ const useGame = () => {
     sound.current.pause();
     sound.current.currentTime = 0;
     sound.current.play();
-  }
+  };
+
+  const handleStartButton = () => {
+    setIsStarted(true);
+    startedRef.current = true;
+
+    handleRestart();
+  };
+
+  const handleRestart = () => {
+    setPlayerOneHealth(100)
+    setPlayerTwoHealth(100);
+    playerOneHealthRef.current = 100;
+    playerTwoHealthRef.current = 100;
+
+    setTimer(30);
+    counter.current = 30;
+
+    player1Ref.current.pos = { x: 70, y: 0 };
+    player1Ref.current.isDead = false;
+    player1Ref.current.switchSprite('idle', true);
+
+    player2Ref.current.pos = { x: 500, y: 100 };
+    player2Ref.current.isDead = false;
+    player2Ref.current.switchSprite('idle', true);
+
+    setResult('');
+    resultRef.current = '';
+
+    bgmSound.current.muted = false;
+    bgmSound.current.pause();
+  };
 
   const animate = (params) => {
     const { player1, player2, background, ctx, shop } = params;
@@ -421,8 +491,10 @@ const useGame = () => {
     timer,
     result,
     canvasRef,
+    isStarted,
     playerOneHealth,
     playerTwoHealth,
+    handleStartButton,
   };
 };
 
